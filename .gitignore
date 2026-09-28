@@ -1,0 +1,21 @@
+# Landed data — rebuild with: python -m pedestrian.cli all
+data/
+logs/*.log
+
+# The watermark IS committed: it shows where the pipeline is up to.
+!state/watermark.json
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+# API + data
+requests>=2.31
+pandas>=2.0
+numpy>=1.24
+
+# Tests
+pytest>=7.4
+
+# Optional: only needed if you rebuild gold with dbt (see dbt/)
+# dbt-databricks>=1.8

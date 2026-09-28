@@ -1,0 +1,46 @@
+{
+  "//": "Databricks Workflow definition. Create this once in the UI (Workflows > Create job),",
+  "//2": "or import with: databricks jobs create --json @jobs/workflow_job.json",
+  "//3": "The point of a job (rather than running notebooks by hand) is dependencies,",
+  "//4": "scheduling, retries and alerting — the things that make it a pipeline, not a script.",
+
+  "name": "melbourne-pedestrian-lakehouse",
+  "email_notifications": {
+    "on_failure": ["REPLACE_WITH_YOUR_EMAIL"],
+    "no_alert_for_skipped_runs": true
+  },
+  "schedule": {
+    "quartz_cron_expression": "0 30 5 * * ?",
+    "timezone_id": "Australia/Melbourne",
+    "pause_status": "UNPAUSED"
+  },
+  "max_concurrent_runs": 1,
+  "tasks": [
+    {
+      "task_key": "bronze_ingest",
+      "description": "Pull new records from the City of Melbourne API into Delta, append only",
+      "notebook_task": { "notebook_path": "/Workspace/Repos/melbourne-pedestrian-lakehouse/notebooks/01_bronze_ingest" },
+      "max_retries": 3,
+      "min_retry_interval_millis": 60000,
+      "retry_on_timeout": true,
+      "timeout_seconds": 3600
+    },
+    {
+      "task_key": "silver_clean",
+      "description": "Quality checks, quarantine, time zone conversion, MERGE into silver",
+      "depends_on": [{ "task_key": "bronze_ingest" }],
+      "notebook_task": { "notebook_path": "/Workspace/Repos/melbourne-pedestrian-lakehouse/notebooks/02_silver_clean" },
+      "max_retries": 1,
+      "timeout_seconds": 3600
+    },
+    {
+      "task_key": "gold_aggregate",
+      "description": "Rebuild the four gold aggregate tables",
+      "depends_on": [{ "task_key": "silver_clean" }],
+      "notebook_task": { "notebook_path": "/Workspace/Repos/melbourne-pedestrian-lakehouse/notebooks/03_gold_aggregate" },
+      "max_retries": 1,
+      "timeout_seconds": 3600
+    }
+  ],
+  "tags": { "project": "pedestrian-lakehouse", "owner": "pranay", "env": "dev" }
+}

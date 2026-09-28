@@ -1,0 +1,16 @@
+name: pedestrian
+version: "1.0.0"
+config-version: 2
+profile: pedestrian
+
+model-paths: ["models"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  pedestrian:
+    +file_format: delta
+    silver:
+      +materialized: view      # thin, cheap, always current
+    gold:
+      +materialized: table     # queried often, so materialise it

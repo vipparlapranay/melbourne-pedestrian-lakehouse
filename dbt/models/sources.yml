@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: silver
+    database: melb
+    schema: silver
+    description: Cleaned, deduplicated pedestrian readings produced by notebook 02.
+    tables:
+      - name: pedestrian_hourly
+        description: One row per sensor per hour, Melbourne local time.
+        loaded_at_field: _ingested_at_utc
+        freshness:
+          # Counts are published monthly, so a week without new data is odd
+          # and two weeks means something is broken.
+          warn_after: { count: 7, period: day }
+          error_after: { count: 14, period: day }
+        columns:
+          - name: sensor_id
+            tests: [not_null]
+          - name: event_ts_utc
+            tests: [not_null]
+          - name: count
+            tests: [not_null]
+      - name: sensors
+        description: Sensor dimension - location, name and active status.
+        columns:
+          - name: sensor_id
+            tests: [not_null, unique]

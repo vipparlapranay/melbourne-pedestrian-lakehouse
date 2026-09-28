@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: daily_location_counts
+    description: Daily pedestrian totals per sensor, with data completeness.
+    columns:
+      - name: sensor_id
+        tests: [not_null]
+      - name: event_date
+        tests: [not_null]
+      - name: total_count
+        tests:
+          - not_null
+          # Counts are never negative; this catches an upstream sign error.
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+      - name: completeness
+        description: Share of the day's 24 hourly readings that arrived.
+
+  - name: top_locations_monthly
+    description: Monthly totals per sensor with rank and month-on-month change.
+    columns:
+      - name: rank_in_month
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+    tests:
+      # One row per sensor per month, or the grain is wrong.
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [year_month, sensor_id]

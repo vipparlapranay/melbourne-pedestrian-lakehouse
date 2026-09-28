@@ -1,0 +1,17 @@
+[project]
+name = "melbourne-pedestrian-lakehouse"
+version = "1.0.0"
+description = "Incremental lakehouse pipeline over City of Melbourne pedestrian sensor data"
+requires-python = ">=3.10"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

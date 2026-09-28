@@ -1,0 +1,12 @@
+# Copy to ~/.dbt/profiles.yml and fill in. Never commit real tokens.
+pedestrian:
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+      catalog: melb
+      schema: gold
+      host: REPLACE.cloud.databricks.com      # Workspace > ... > SQL warehouse > Connection details
+      http_path: /sql/1.0/warehouses/REPLACE
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      threads: 4

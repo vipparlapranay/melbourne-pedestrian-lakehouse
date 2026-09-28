@@ -1,0 +1,23 @@
+# Unit tests run on every push. The suite uses a fake API client, so CI never
+# depends on a public endpoint being up — tests that fail for reasons unrelated
+# to your code are worse than no tests.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - run: pytest -v
